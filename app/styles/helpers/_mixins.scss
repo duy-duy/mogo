@@ -1,0 +1,128 @@
+//width height
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+//absolute center
+@mixin absoluteCenter($direction: "left", $position: absolute) {
+  position: $position;
+  //TH1: Center horizontal
+  @if $direction == "left" {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  //TH2: Center vertical
+  @if $direction == "top" {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  //TH3: Center both horizontal and vertical
+  @if $direction == "both" {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@mixin absoluteFull() {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+//mixin maxWidth($breakpoint) {@content}
+@mixin maxWidth($breakpoint) {
+  @media screen and (max-width: $breakpoint) {
+    @content;
+  }
+}
+//mixin minWidth($breakpoint) {@content}
+@mixin minWidth($breakpoint) {
+  @media screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+//Flexbox
+@mixin flexbox(
+  $align-items: stretch,
+  $justify-content: flex-start,
+  $direction: row,
+  $flex: flex,
+  $wrap: nowrap
+) {
+  align-items: $align-items;
+  justify-content: $justify-content;
+  flex-direction: $direction;
+  display: $flex;
+  flex-wrap: $wrap;
+}
+
+//hide scroll
+@mixin hideScroll() {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin hoverEffect($itemClass, $contentClass, $transform: "true") {
+  #{$itemClass} {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.25s linear;
+    #{$contentClass} {
+      @include absoluteFull();
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s linear;
+      background-color: black;
+      z-index: 2;
+      background: linear-gradient(
+        to bottom,
+        rgba($primary-color, 0.8),
+        rgba($secondary-color, 0.8)
+      );
+      @include flexbox(center, center, column);
+    }
+    @if $transform == "true" {
+      &::after {
+        content: "";
+        @include absoluteFull();
+        background-color: $third-color;
+        z-index: -1;
+        transition: transform 0.25s linear;
+      }
+    }
+    &:hover {
+      #{$contentClass} {
+        opacity: 1;
+        visibility: visible;
+      }
+      @if $transform == "true" {
+        transform: translate(-1rem, -1rem);
+        &::after {
+          transform: translate(1rem, 1rem);
+        }
+      }
+    }
+  }
+}
+
+@mixin touchSlider($list, $item) {
+  &#{$list} {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 1rem;
+    scroll-snap-type: x mandatory;
+    scroll-snap-stop: always;
+    @include hideScroll;
+  }
+  &#{$item} {
+    width: 100%;
+    margin-bottom: 2.5rem;
+  }
+}
